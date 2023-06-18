@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Electronix - Gear is what we do</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/logo.ico}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+
+</head>
+<body onload="updateTotalPrice()">
+<header>
+    <div id="top-header">
+        <div class="container">
+            <ul class="header-links pull-left">
+                <li><a th:text="${Phone?.content  ?: 'null'}"></a></li>
+                <li><a th:text="${Email?.content  ?: 'null'}"></a></li>
+                <li><a th:text="${Address?.content  ?: 'null'}"></a></li>
+            </ul>
+            <ul class="header-links pull-right">
+                <li><a>ENG</a></li>
+                <li><a href="/api/user/myAccount">My Account</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="header-logo">
+                        <a href="/api/products/shop" class="logo">
+                            <img th:src="@{/img/logo.png}" alt="Logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="header-search">
+                        <form action="/api/products/search" th:method="GET">
+                            <select class="input-select" name="category">
+                                <option>All Categories</option>
+                                <t th:each="category : ${Categories  ?: 'null'}">
+                                    <option th:text="${category.name  ?: 'null'}"></option>
+                                </t>
+                            </select>
+                            <input class="input" placeholder="Search here" name="search">
+                            <button class="search-btn">Search</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-3 clearfix">
+                    <div class="header-ctn">
+                        <div>
+                            <a href="/api/user/wishlist">
+                                <i class="heart"></i>
+                                <span>Your Wishlist</span>
+                                <div class="qty" th:text="${WishlistSize  ?: 'null'}"></div>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="/api/user/cart">
+                                <i class="shopping-cart"></i>
+                                <span>Your Cart</span>
+                                <div class="qty" th:text="${CartSize  ?: 'null'}"></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<nav id="navigation">
+    <div class="container">
+        <div id="responsive-nav">
+            <ul class="main-nav nav navbar-nav">
+                <li><a href="/api/products/shop">Home</a></li>
+                <li><a href="/api/products/shop/laptops">Laptops</a></li>
+                <li><a href="/api/products/shop/smartphones">Smartphones</a></li>
+                <li><a href="/api/products/shop/tablets">Tablets</a></li>
+                <li><a href="/api/products/shop/cameras">Cameras</a></li>
+                <li><a href="/api/products/shop/headphones">Headphones</a></li>
+                <li><a href="/api/products/shop/speakers">Speakers</a></li>
+                <li><a href="/api/products/shop/accessories">Accessories</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="section" style="min-height: 36vh">
+    <div class="container">
+        <div class="row" th:if="${cart != null and cart.getOrderProducts() != null}">
+            <div class="col-md-12">
+                <div class="products-tabs">
+                    <div id="tab1" class="tab-pane active">
+                        <p class="wish-cart-header"> Your Cart 🛒</p>
+                        <div class="products-slick" data-nav="#slick-nav-1" style="overflow: hidden;">
+                            <div class="product" th:each="orderProduct : ${cart.getOrderProducts()}">
+
+                                <div class="row" style="align-items: center; display: flex; justify-content: center;">
+                                    <div class="col-md-3">
+                                        <div class="product-img">
+                                            <img th:src="@{/img/{filename}(filename=${orderProduct.image})}"
+                                                 alt="Product Image">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="product-body" style="align-items: center">
+                                            <div class="product-name">
+                                                <a th:href="'/api/products/' + ${orderProduct.productId}"
+                                                   th:text="${orderProduct.productName}"></a>
+                                            </div>
+                                            <p class="product-price" th:text="${orderProduct.price} + ' PLN'"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="product-quantity">
+                                            <div style="color:#000;font-weight: bold;">Quantity</div>
+                                            <input type="number" min="1" max="10" value="1"
+                                                   th:value="${orderProduct.quantity}" oninput="validateQuantity(event)"
+                                                   onchange="updateTotalPrice()">
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-2">
+
+                                        <div class="product-subtotal">
+                                            <p style="color:#000;font-weight: bold;">Total Price</p>
+                                            <span class="product-subtotal2">0.00 PLN</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="product-remove">
+                                            <form class="form" action="/api/user/removeItemFromCart" method="post">
+                                                <input type="hidden" name="productId"
+                                                       th:value="${orderProduct.productId}">
+                                                <button
+                                                        type="submit"
+                                                        class="cartRemoveButton"> Remove
+                                                </button>
+
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" th:if="${cart.getOrderProducts() != null}" id="orderSection">
+                <div class="cart-summary">
+                    <h3>
+                        <div class="cart-summary-item">
+                            <span class="total-price" id="totalPrice">0.00 PLN</span>
+                        </div>
+                    </h3>
+                    <br>
+                    <!--                    <form class="form" action="/api/user/removeItemFromCart" method="post">-->
+                    <!--                        <input type="hidden" name="productId" th:value="${orderProduct.productId}">-->
+                    <!--                        <button-->
+                    <!--                                type="submit"-->
+                    <!--                                class="cartRemoveButton"> Remove-->
+                    <!--                        </button>-->
+
+                    <!--                    </form>-->
+
+                    <form class="form" action="/api/user/order" method="post">
+                        <input type="hidden" name="orderId" th:value="${cart.getId()}">
+                        <button class="order-btn" type="submit">Order</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function updateTotalPrice() {
+        var products = document.getElementsByClassName('product');
+        var totalPrice = 0;
+
+        for (var i = 0; i < products.length; i++) {
+            var product = products[i];
+            var priceElement = product.getElementsByClassName('product-price')[0];
+            var quantityElement = product.getElementsByClassName('product-quantity')[0].getElementsByTagName('input')[0];
+            var price = parseFloat(priceElement.textContent);
+            var quantity = parseInt(quantityElement.value);
+            var subtotal = price * quantity;
+            product.getElementsByClassName('product-subtotal2')[0].textContent = subtotal.toFixed(2) + ' PLN';
+            totalPrice += subtotal;
+        }
+        document.getElementById('totalPrice').textContent = totalPrice.toFixed(2) + ' PLN';
+        if (totalPrice == 0) {
+            document.getElementById('orderSection').style.display = 'none';
+        }
+    }
+
+    function validateQuantity(event) {
+        const input = event.target;
+        const minValue = parseInt(input.min);
+        const maxValue = parseInt(input.max);
+        let value = parseInt(input.value);
+
+        if (isNaN(value)) {
+            input.value = minValue;
+        } else if (value < minValue) {
+            input.value = minValue;
+        } else if (value > maxValue) {
+            input.value = maxValue;
+        }
+    }
+
+
+</script>
+
+
+<footer id="footer">
+    <div class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">About Us</h3>
+                        <p th:text="${AboutUs?.content  ?: 'null'}"></p>
+                        <ul class="footer-links">
+                            <p th:text="${Address?.content  ?: 'null'}"></p>
+                            <p th:text="${Phone?.content  ?: 'null'}"></p>
+                            <p th:text="${Email?.content  ?: 'null'}"></p>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">Categories</h3>
+                        <ul class="footer-links">
+                            <li><a href="/api/products/shop/laptops">Laptops</a></li>
+                            <li><a href="/api/products/shop/smartphones">Smartphones</a></li>
+                            <li><a href="/api/products/shop/tablets">Tablets</a></li>
+                            <li><a href="/api/products/shop/cameras">Cameras</a></li>
+                            <li><a href="/api/products/shop/headphones">Headphones</a></li>
+                            <li><a href="/api/products/shop/speakers">Speakers</a></li>
+                            <li><a href="/api/products/shop/accessories">Accessories</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="clearfix visible-xs"></div>
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">Information</h3>
+                        <ul class="footer-links">
+                            <li><a href="/api/information/aboutUs">About Us</a></li>
+                            <li><a href="/api/information/contactUs">Contact Us</a></li>
+                            <li><a href="/api/information/privacyPolicy">Privacy Policy</a></li>
+                            <li><a href="/api/information/ordersAndReturns">Orders and Returns</a></li>
+                            <li><a href="/api/information/termsAndConditions">Terms & Conditions</a></li>
+                            <li><a href="/api/information/faq">FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">Service</h3>
+                        <ul class="footer-links">
+                            <li><a href="/api/user/myAccount">My Account</a></li>
+                            <li><a href="/api/user/cart">View Cart</a></li>
+                            <li><a href="/api/user/wishlist">Wishlist</a></li>
+                            <li><a href="/api/user/myOrder">Track My Order</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="bottom-footer" class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <ul class="footer-payments">
+                        <li><a><i class="VISA"></i></a></li>
+                        <li><a><i class="MASTERCARD"></i></a></li>
+                        <li><a><i class="PAYPAL"></i></a></li>
+                        <li><a><i class="BLIK"></i></a></li>
+                        <li><a><i class="BITCOIN"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

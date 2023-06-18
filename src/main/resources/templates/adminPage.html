@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Electronix - Gear is what we do</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/logo.ico}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body onload="showElement('products')">
+<header>
+    <div id="top-header">
+        <div class="container">
+            <ul class="header-links pull-left">
+                <li><a th:text="${Phone?.content  ?: 'null'}"></a></li>
+                <li><a th:text="${Email?.content  ?: 'null'}"></a></li>
+                <li><a th:text="${Address?.content  ?: 'null'}"></a></li>
+            </ul>
+            <ul class="header-links pull-right">
+                <li><a>ENG</a></li>
+                <li><a href="/api/user/myAccount">My Account</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="header-logo">
+                        <a href="/api/products/shop" class="logo">
+                            <img th:src="@{/img/logo.png}" alt="Logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="header-search">
+                        <form action="/api/products/search" th:method="GET">
+                            <select class="input-select" name="category">
+                                <option>All Categories</option>
+                                <t th:each="category : ${Categories  ?: 'null'}">
+                                    <option th:text="${category.name  ?: 'null'}"></option>
+                                </t>
+                            </select>
+                            <input class="input" placeholder="Search here" name="search">
+                            <button class="search-btn">Search</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-3 clearfix">
+                    <div class="header-ctn">
+                        <div>
+                            <a href="/api/user/wishlist">
+                                <i class="heart"></i>
+                                <span>Your Wishlist</span>
+                                <div class="qty" th:text="${WishlistSize  ?: 'null'}"></div>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="/api/user/cart">
+                                <i class="shopping-cart"></i>
+                                <span>Your Cart</span>
+                                <div class="qty" th:text="${CartSize  ?: 'null'}"></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<nav id="navigation">
+    <div class="container">
+        <div id="responsive-nav">
+            <ul class="main-nav nav navbar-nav">
+                <li><a href="/api/products/shop">Home</a></li>
+                <li><a href="/api/products/shop/laptops">Laptops</a></li>
+                <li><a href="/api/products/shop/smartphones">Smartphones</a></li>
+                <li><a href="/api/products/shop/tablets">Tablets</a></li>
+                <li><a href="/api/products/shop/cameras">Cameras</a></li>
+                <li><a href="/api/products/shop/headphones">Headphones</a></li>
+                <li><a href="/api/products/shop/speakers">Speakers</a></li>
+                <li><a href="/api/products/shop/accessories">Accessories</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="section">
+    <div class="container-admin">
+        <div class="row">
+            <div class="responsive-nav">
+                <ul class="main-nav nav navbar-nav" style="font-weight: bold; font-size: 40px">
+                    <li style="display: none"><a href="#orders">placeholder</a></li>
+                    <li><a href="#products" onclick="showElement('products')">Products</a></li>
+                    <li><a href="#users" onclick="showElement('users')">Users</a></li>
+                    <li><a href="#informations" onclick="showElement('informations')">Informations</a></li>
+                </ul>
+            </div>
+            <script>
+                function showElement(elementId) {
+                    hideAllElements();
+                    document.getElementById(elementId).style.display = 'block';
+                }
+
+                function hideAllElements() {
+                    document.getElementById('products').style.display = 'none';
+                    document.getElementById('users').style.display = 'none';
+                    document.getElementById('informations').style.display = 'none';
+                }
+            </script>
+            <div class="col-md-12">
+                <div class="admin-content">
+                    <div id="products" class="admin-tab">
+                        <h2>Upload image to server</h2>
+                        <table>
+                        </table>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="box">
+                                <form action="uploadImage" method="POST" enctype="multipart/form-data">
+                                    <td type="file" name="image" accept="image/*"><input type="file" name="image"
+                                                                                         accept="image/*"></td>
+                                    <td class="actions">
+                                        <button type="submit">Upload</button>
+                                    </td>
+                                </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <br><br>
+                        <h2>Add Product</h2>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="box" id="box2">
+                                <td class="product-category2">
+                                    <select th:name="category">
+                                        <option th:each="category : ${categories  ?: 'null'}" th:value="${category  ?: 'null'}"
+                                                th:text="${category  ?: 'null'}"></option>
+                                    </select>
+                                </td>
+                                <td class="product-name2" contentEditable="true"></td>
+                                <td class="product-description2" contentEditable="true"></td>
+                                <td class="product-price2" contentEditable="true"></td>
+                                <td class="product-image2">
+                                    <select th:name="image">
+                                        <option th:each="im : ${images  ?: 'null'}" th:value="${im  ?: 'null'}" th:text="${im  ?: 'null'}">
+                                        </option>
+                                    </select>
+                                </td>
+                                <td class="actions">
+                                    <form id="addProductForm" method="post" action="addProduct"
+                                          onsubmit="return syncValues()">
+                                        <input type="hidden" name="name"/>
+                                        <input type="hidden" name="description"/>
+                                        <input type="hidden" name="category"/>
+                                        <input type="hidden" name="price"/>
+                                        <input type="hidden" name="image"/>
+                                        <button type="submit" onclick="syncValues(event, this)">Add</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <br><br>
+                        <h2>Products</h2>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="box" id="box1" th:each="product : ${products  ?: 'null'}">
+                                <td class="product-category2">
+                                    <select th:name="category">
+                                        <option th:each="category : ${categories  ?: 'null'}" th:value="${category  ?: 'null'}"
+                                                th:text="${category  ?: 'null'}"
+                                                th:selected="${category == product.category  ?: 'null'}"></option>
+                                    </select>
+                                </td>
+                                <td class="product-name2" contentEditable="true" th:text="${product.name  ?: 'null'}"></td>
+                                <td class="product-description2" contentEditable="true"
+                                    th:text="${product.description  ?: 'null'}"></td>
+                                <td class="product-price2" contentEditable="true" th:text="${product.price  ?: 'null'}"></td>
+                                <td class="product-image2">
+                                    <select th:name="image">
+                                        <option th:each="im : ${images  ?: 'null'}" th:value="${im  ?: 'null'}" th:text="${im  ?: 'null'}"
+                                                th:selected="${im == product.image  ?: 'null'}">
+                                        </option>
+                                    </select>
+                                </td>
+                                <td class="actions">
+                                    <form id="saveProductForm" method="post" action="changeProduct"
+                                          onsubmit="return syncValues()">
+                                        <input type="hidden" name="id" th:value="${product.id  ?: 'null'}"/>
+                                        <input type="hidden" name="name"/>
+                                        <input type="hidden" name="description"/>
+                                        <input type="hidden" name="category"/>
+                                        <input type="hidden" name="price"/>
+                                        <input type="hidden" name="image"/>
+                                        <button type="submit" onclick="syncValues(event, this)">Save</button>
+                                    </form>
+                                    <form id="deleteProductForm" method="post" action="deleteProduct">
+                                        <input type="hidden" name="id" th:value="${product.id  ?: 'null'}"/>
+                                        <button type="submit">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <script>
+                        function syncValues(event, scope) {
+                            const form = scope.parentNode;
+                            const nameField = form.querySelector('input[name="name"]');
+                            const descriptionField = form.querySelector('input[name="description"]');
+                            const priceField = form.querySelector('input[name="price"]');
+                            const imageField = form.querySelector('input[name="image"]');
+                            const categoryField = form.querySelector('input[name="category"]');
+                            const box1 = scope.parentNode.parentNode.parentNode;
+                            const nameCell = box1.querySelector('.product-name2');
+                            const descriptionCell = box1.querySelector('.product-description2');
+                            const priceCell = box1.querySelector('.product-price2');
+                            const imageCell = box1.querySelector('.product-image2 option:checked');
+                            const categoryCell = box1.querySelector('.product-category2 option:checked');
+                            nameField.value = nameCell.textContent.trim();
+                            descriptionField.value = descriptionCell.textContent.trim();
+                            priceField.value = priceCell.textContent.trim();
+                            imageField.value = imageCell.textContent.trim();
+                            categoryField.value = categoryCell.textContent.trim();
+                            form.submit();
+                        }
+                    </script>
+                    <div id="users" class="admin-tab">
+                        <h2>Users</h2>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="box" th:each="user : ${users  ?: 'null'}">
+
+                                <td class="product-name2" th:text="${user.id  ?: 'null'}"></td>
+                                <td class="product-name2" contentEditable="true" th:text="${user.username  ?: 'null'}"></td>
+                                <td class="product-name2" contentEditable="true" th:text="${user.email  ?: 'null'}"></td>
+                                <td class="user-role2">
+                                    <select th:name="role">
+                                        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}"
+                                                th:selected="${role == user.role}">
+                                        </option>
+                                    </select>
+                                </td>
+
+                                <td class="actions">
+                                    <form method="post" action="changeUserRole" onsubmit="return syncRole()">
+                                        <input type="hidden" name="id" th:value="${user.id  ?: 'null'}"/>
+                                        <input type="hidden" name="role"/>
+                                        <button type="submit" onclick="syncRole(event, this)">Apply</button>
+                                    </form>
+                                    <form method="post" action="deleteUser">
+                                        <input type="hidden" name="id" th:value="${user.id  ?: 'null'}"/>
+                                        <button type="submit">Delete</button>
+                                    </form>
+                                </td>
+
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <script>
+                        function syncRole(event, scope) {
+                            const form = scope.parentNode;
+                            const roleField = form.querySelector('input[name="role"]');
+                            const box1 = scope.parentNode.parentNode.parentNode;
+                            const roleCell = box1.querySelector('.user-role2 option:checked');
+                            roleField.value = roleCell.textContent.trim();
+                            form.submit();
+                        }
+                    </script>
+
+                    <div id="informations" class="admin-tab">
+                        <h2>Informations</h2>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Name</th>
+                                <th>Text</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="box" th:each="information : ${informations  ?: 'null'}">
+                                <td class="product-name2" contentEditable="true" th:text="${information.category  ?: 'null'}"></td>
+                                <td class="product-category2" contentEditable="true" th:text="${information.name  ?: 'null'}"></td>
+                                <td class="description3" contentEditable="true" th:text="${information.content  ?: 'null'}"></td>
+
+                                <td class="actions">
+                                    <form method="post" action="changeInformation" onsubmit="return syncInfo()">
+                                        <input type="hidden" name="id" th:value="${information.id  ?: 'null'}"/>
+                                        <input type="hidden" name="category"/>
+                                        <input type="hidden" name="name"/>
+                                        <input type="hidden" name="content"/>
+                                        <button type="submit" onclick="syncInfo(event, this)">Save</button>
+                                    </form>
+                                    <form method="post" action="deleteInformation">
+                                        <input type="hidden" name="id" th:value="${information.id  ?: 'null'}"/>
+                                        <button type="submit">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <script>
+                        function syncInfo(event, scope) {
+                            const form = scope.parentNode;
+                            const categoryField = form.querySelector('input[name="category"]');
+                            const nameField = form.querySelector('input[name="name"]');
+                            const contentField = form.querySelector('input[name="content"]');
+                            const box1 = scope.parentNode.parentNode.parentNode;
+                            const categoryCell = box1.querySelector('.product-name2');
+                            const nameCell = box1.querySelector('.product-category2');
+                            const contentCell = box1.querySelector('.description3');
+                            categoryField.value = categoryCell.textContent.trim();
+                            nameField.value = nameCell.textContent.trim();
+                            contentField.value = contentCell.textContent.trim();
+                            form.submit();
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <script src="./script.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script th:inline="javascript">
+            var alertMessage = [[${alertMessage}]];
+            if (alertMessage) {
+                swal( alertMessage,"", "info");
+            }
+        </script>
+    </div>
+</div>
+<footer id="footer">
+    <div class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">About Us</h3>
+                        <p th:text="${AboutUs?.content  ?: 'null'}"></p>
+                        <ul class="footer-links">
+                            <p th:text="${Address?.content  ?: 'null'}"></p>
+                            <p th:text="${Phone?.content  ?: 'null'}"></p>
+                            <p th:text="${Email?.content  ?: 'null'}"></p>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">Categories</h3>
+                        <ul class="footer-links">
+                            <li><a href="/api/products/shop/laptops">Laptops</a></li>
+                            <li><a href="/api/products/shop/smartphones">Smartphones</a></li>
+                            <li><a href="/api/products/shop/tablets">Tablets</a></li>
+                            <li><a href="/api/products/shop/cameras">Cameras</a></li>
+                            <li><a href="/api/products/shop/headphones">Headphones</a></li>
+                            <li><a href="/api/products/shop/speakers">Speakers</a></li>
+                            <li><a href="/api/products/shop/accessories">Accessories</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="clearfix visible-xs"></div>
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">Information</h3>
+                        <ul class="footer-links">
+                            <li><a href="/api/information/aboutUs">About Us</a></li>
+                            <li><a href="/api/information/contactUs">Contact Us</a></li>
+                            <li><a href="/api/information/privacyPolicy">Privacy Policy</a></li>
+                            <li><a href="/api/information/ordersAndReturns">Orders and Returns</a></li>
+                            <li><a href="/api/information/termsAndConditions">Terms & Conditions</a></li>
+                            <li><a href="/api/information/faq">FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">Service</h3>
+                        <ul class="footer-links">
+                            <li><a href="/api/user/myAccount">My Account</a></li>
+                            <li><a href="/api/user/cart">View Cart</a></li>
+                            <li><a href="/api/user/wishlist">Wishlist</a></li>
+                            <li><a href="/api/user/myOrder">Track My Order</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="bottom-footer" class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <ul class="footer-payments">
+                        <li><a><i class="VISA"></i></a></li>
+                        <li><a><i class="MASTERCARD"></i></a></li>
+                        <li><a><i class="PAYPAL"></i></a></li>
+                        <li><a><i class="BLIK"></i></a></li>
+                        <li><a><i class="BITCOIN"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

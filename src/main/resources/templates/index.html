@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Electronix - Gear is what we do</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/logo.ico}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+
+</head>
+<body>
+<header>
+    <div id="top-header">
+        <div class="container">
+            <ul class="header-links pull-left">
+                <li><a th:text="${Phone?.content  ?: 'null'}"></a></li>
+                <li><a th:text="${Email?.content  ?: 'null'}"></a></li>
+                <li><a th:text="${Address?.content  ?: 'null'}"></a></li>
+            </ul>
+            <ul class="header-links pull-right">
+                <li><a>ENG</a></li>
+                <li><a href="/api/user/myAccount">My Account</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="header-logo">
+                        <a href="/api/products/shop" class="logo">
+                            <img th:src="@{/img/logo.png}" alt="Logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="header-search">
+                        <form action="/api/products/search" th:method="GET">
+                            <select class="input-select" name="category">
+                                <option>All Categories</option>
+                                <t th:each="category : ${Categories  ?: 'null'}">
+                                    <option th:text="${category.name  ?: 'null'}"></option>
+                                </t>
+                            </select>
+                            <input class="input" placeholder="Search here" name="search">
+                            <button class="search-btn">Search</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-3 clearfix">
+                    <div class="header-ctn">
+                        <div>
+                            <a href="/api/user/wishlist">
+                                <i class="heart"></i>
+                                <span>Your Wishlist</span>
+                                <div class="qty" th:text="${WishlistSize  ?: 'null'}"></div>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="/api/user/cart">
+                                <i class="shopping-cart"></i>
+                                <span>Your Cart</span>
+                                <div class="qty" th:text="${CartSize  ?: 'null'}"></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<nav id="navigation">
+    <div class="container">
+        <div id="responsive-nav">
+            <ul class="main-nav nav navbar-nav">
+                <li><a href="/api/products/shop">Home</a></li>
+                <li><a href="/api/products/shop/laptops">Laptops</a></li>
+                <li><a href="/api/products/shop/smartphones">Smartphones</a></li>
+                <li><a href="/api/products/shop/tablets">Tablets</a></li>
+                <li><a href="/api/products/shop/cameras">Cameras</a></li>
+                <li><a href="/api/products/shop/headphones">Headphones</a></li>
+                <li><a href="/api/products/shop/speakers">Speakers</a></li>
+                <li><a href="/api/products/shop/accessories">Accessories</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="section" style="padding-top: 0px;margin-top:-20px;">
+    <div class="container" style="padding-top: 0px;margin-top: 0px;">
+        <div class="pagination2" style="margin-top: 0px;margin-bottom:0; padding-top: 0px">
+
+            <div th:if="${search}">
+                <ul class="main-nav nav navbar-nav" style="margin-top: 00px;margin-bottom:0; padding: 0">
+                    <li th:unless="${currentPage == 0}" style="margin-top: 0; margin-bottom: 0; padding: 0">
+                        <a th:href="@{${'/products/search'}(category=${controller}, search=${search}, page=${currentPage - 1})}"
+                           style="margin-top: 0; margin-bottom: 0; padding: 0">&laquo; Previous</a>
+                    </li>
+
+                    <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:class="${pageNumber == currentPage} ? 'active' : ''"
+                        style="margin-top: 0; margin-bottom: 0; padding: 0">
+                        <a th:href="@{${'/products/search'}(category=${controller}, search=${search}, page=${pageNumber})}"
+                           th:text="${pageNumber + 1}" style="margin-top: 0; margin-bottom: 0; padding: 0"></a>
+                    </li>
+
+                    <li th:unless="${currentPage == totalPages - 1}"
+                        style="margin-top: 0; margin-bottom: 0; padding: 0">
+                        <a th:href="@{${'/products/search'}(category=${controller}, search=${search}, page=${currentPage + 1})}"
+                           style="margin-top: 0; margin-bottom: 0; padding: 0">Next &raquo;</a>
+                    </li>
+                </ul>
+            </div>
+            <div th:unless="${search}">
+                <ul class="main-nav nav navbar-nav" style="margin-top: 20px;margin-bottom:0; padding: 0">
+                    <li th:unless="${currentPage == 0}" style="margin-top: 0;margin-bottom:0; padding: 0">
+                        <a th:href="@{/products/{category}(category=${controller},page=${currentPage - 1})}"
+                           style="margin-top: 0;margin-bottom:0; padding: 0">&laquo; Previous</a>
+                    </li>
+
+                    <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:class="${pageNumber == currentPage} ? 'active'"
+                        style="margin-top: 0;margin-bottom:0; padding: 0">
+                        <a th:href="@{/products/{category}(category=${controller},page=${pageNumber})}"
+                           th:text="${pageNumber + 1}" style="margin-top: 0;margin-bottom:0; padding: 0"></a>
+                    </li>
+
+                    <li th:unless="${currentPage == totalPages - 1}" style="margin-top: 0;margin-bottom:0; padding: 0">
+                        <a th:href="@{/products/{category}(category=${controller},page=${currentPage + 1})}"
+                           style="margin-top: 0;margin-bottom:0; padding: 0">Next &raquo;</a>
+                    </li>
+                </ul>
+
+            </div>
+
+        </div>
+        <div class="col-md-12" th:each="product : ${products}">
+            <div class="row">
+                <div class="products-tabs">
+                    <div id="tab1" class="tab-pane active">
+                        <div class="products-slick" data-nav="#slick-nav-1">
+                            <div class="product">
+                                <div class="product-img">
+                                    <a th:href="'/api/products/' + ${product.id}">
+                                        <img th:src="@{/img/{filename}(filename=${product.image})}" alt="Product Image"
+                                             style="width: 20%;">
+                                    </a>
+                                </div>
+                                <div class="product-body">
+                                    <p class="product-category" th:text="${product.category}"></p>
+                                    <h3 class="product-name"><a th:href="'/api/products/' + ${product.id}"
+                                                                th:text="${product.name}"></a></h3>
+                                    <h4 class="product-price" th:text="${product.price} + ' PLN'"></h4>
+
+                                    <div class="product-btns">
+
+                                        <button class="add-to-wishlist"
+                                                th:attr="onclick=|addToWishList('${product.id}')|">
+                                            <i class="heart"></i>
+                                            <span class="tooltipp">add to wishlist</span>
+                                        </button>
+                                        <button th:id="'quick-view-button-' + ${product.id}"
+                                                th:onclick="updateTooltip([[${product.description}]], [[${product.id}]])">
+                                            <i class="quick-view2"></i><span class="tooltipp">quick view</span>
+                                        </button>
+                                        <script>
+                                            var boolean = false;
+
+                                            function updateTooltip(description, id) {
+                                                if (boolean === false) {
+                                                    var tooltip = document.querySelector("#quick-view-button-" + id + " .tooltipp");
+                                                    tooltip.textContent = description;
+                                                    tooltip.style.width = "600px";
+                                                    tooltip.style.lineHeight = "1.5";
+                                                    boolean = true;
+                                                } else {
+                                                    var tooltip = document.querySelector("#quick-view-button-" + id + " .tooltipp");
+                                                    tooltip.textContent = "quick view";
+                                                    tooltip.style.width = "150px";
+                                                    tooltip.style.lineHeight = "10px";
+                                                    boolean = false;
+                                                }
+                                            }
+
+                                            function addToWishList(productId) {
+                                                var form = document.createElement('form');
+                                                form.action = '/api/user/addToWishList';
+                                                form.method = 'POST';
+                                                var input = document.createElement('input');
+                                                input.type = 'hidden';
+                                                input.name = 'productId';
+                                                input.value = productId;
+                                                form.appendChild(input);
+                                                document.body.appendChild(form);
+                                                form.submit();
+                                            }
+
+                                            window.onpageshow = function (event) {
+                                                if (event.persisted) {
+                                                    var scrollPosition = sessionStorage.getItem('scrollPosition');
+                                                    if (scrollPosition) {
+                                                        window.scrollTo(0, scrollPosition);
+                                                        sessionStorage.removeItem('scrollPosition');
+                                                    }
+                                                } else {
+                                                    sessionStorage.setItem('scrollPosition', window.scrollY);
+                                                }
+                                            };
+
+                                        </script>
+                                    </div>
+                                </div>
+                                <div class="add-to-cart">
+                                    <form action="/api/user/addToCart" method="post">
+                                        <input type="hidden" name="productId" th:value="${product.id}">
+                                        <button type="submit" class="add-to-cart-btn"><i class="shopping-cart"></i>
+                                            add to cart
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagination2" style="margin-top: 20px;margin-bottom:0; padding: 20px">
+
+            <div th:if="${search}">
+                <ul class="main-nav nav navbar-nav" style="margin-top: 20px;margin-bottom:0; padding: 0">
+                    <li th:unless="${currentPage == 0}" style="margin-top: 0; margin-bottom: 0; padding: 0">
+                        <a th:href="@{${'/products/search'}(category=${controller}, search=${search}, page=${currentPage - 1})}"
+                           style="margin-top: 0; margin-bottom: 0; padding: 0">&laquo; Previous</a>
+                    </li>
+
+                    <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:class="${pageNumber == currentPage} ? 'active' : ''"
+                        style="margin-top: 0; margin-bottom: 0; padding: 0">
+                        <a th:href="@{${'/products/search'}(category=${controller}, search=${search}, page=${pageNumber})}"
+                           th:text="${pageNumber + 1}" style="margin-top: 0; margin-bottom: 0; padding: 0"></a>
+                    </li>
+
+                    <li th:unless="${currentPage == totalPages - 1}"
+                        style="margin-top: 0; margin-bottom: 0; padding: 0">
+                        <a th:href="@{${'/products/search'}(category=${controller}, search=${search}, page=${currentPage + 1})}"
+                           style="margin-top: 0; margin-bottom: 0; padding: 0">Next &raquo;</a>
+                    </li>
+                </ul>
+            </div>
+            <div th:unless="${search}">
+                <ul class="main-nav nav navbar-nav" style="margin-top: 20px;margin-bottom:0; padding: 0">
+                    <li th:unless="${currentPage == 0}" style="margin-top: 0;margin-bottom:0; padding: 0">
+                        <a th:href="@{/products/{category}(category=${controller},page=${currentPage - 1})}"
+                           style="margin-top: 0;margin-bottom:0; padding: 0">&laquo; Previous</a>
+                    </li>
+
+                    <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:class="${pageNumber == currentPage} ? 'active'"
+                        style="margin-top: 0;margin-bottom:0; padding: 0">
+                        <a th:href="@{/products/{category}(category=${controller},page=${pageNumber})}"
+                           th:text="${pageNumber + 1}" style="margin-top: 0;margin-bottom:0; padding: 0"></a>
+                    </li>
+
+                    <li th:unless="${currentPage == totalPages - 1}" style="margin-top: 0;margin-bottom:0; padding: 0">
+                        <a th:href="@{/products/{category}(category=${controller},page=${currentPage + 1})}"
+                           style="margin-top: 0;margin-bottom:0; padding: 0">Next &raquo;</a>
+                    </li>
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<footer id="footer">
+    <div class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">About Us</h3>
+                        <p th:text="${AboutUs?.content  ?: 'null'}"></p>
+                        <ul class="footer-links">
+                            <p th:text="${Address?.content  ?: 'null'}"></p>
+                            <p th:text="${Phone?.content  ?: 'null'}"></p>
+                            <p th:text="${Email?.content  ?: 'null'}"></p>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">Categories</h3>
+                        <ul class="footer-links">
+                            <li><a href="/api/products/shop/laptops">Laptops</a></li>
+                            <li><a href="/api/products/shop/smartphones">Smartphones</a></li>
+                            <li><a href="/api/products/shop/tablets">Tablets</a></li>
+                            <li><a href="/api/products/shop/cameras">Cameras</a></li>
+                            <li><a href="/api/products/shop/headphones">Headphones</a></li>
+                            <li><a href="/api/products/shop/speakers">Speakers</a></li>
+                            <li><a href="/api/products/shop/accessories">Accessories</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="clearfix visible-xs"></div>
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">Information</h3>
+                        <ul class="footer-links">
+                            <li><a href="/api/information/aboutUs">About Us</a></li>
+                            <li><a href="/api/information/contactUs">Contact Us</a></li>
+                            <li><a href="/api/information/privacyPolicy">Privacy Policy</a></li>
+                            <li><a href="/api/information/ordersAndReturns">Orders and Returns</a></li>
+                            <li><a href="/api/information/termsAndConditions">Terms & Conditions</a></li>
+                            <li><a href="/api/information/faq">FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">Service</h3>
+                        <ul class="footer-links">
+                            <li><a href="/api/user/myAccount">My Account</a></li>
+                            <li><a href="/api/user/cart">View Cart</a></li>
+                            <li><a href="/api/user/wishlist">Wishlist</a></li>
+                            <li><a href="/api/user/myOrder">Track My Order</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="bottom-footer" class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <ul class="footer-payments">
+                        <li><a><i class="VISA"></i></a></li>
+                        <li><a><i class="MASTERCARD"></i></a></li>
+                        <li><a><i class="PAYPAL"></i></a></li>
+                        <li><a><i class="BLIK"></i></a></li>
+                        <li><a><i class="BITCOIN"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+
+
+</html>
